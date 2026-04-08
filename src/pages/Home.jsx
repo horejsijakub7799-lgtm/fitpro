@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { supabase } from '../supabase'
 
 const POTRAVINY_CZ = [
   { nazev: 'Kuřecí prsa', kcal: 165, bil: 31, sach: 0, tuk: 3.6 },
@@ -28,7 +29,7 @@ function dnesniKlic() {
   return `fp_jidla_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`
 }
 
-export default function Home() {
+export default function Home({ uzivatel }) {
   const [pridana, setPridana] = useState([])
   const [hledani, setHledani] = useState('')
   const [vysledky, setVysledky] = useState([])
@@ -36,17 +37,32 @@ export default function Home() {
   const [mnozstvi, setMnozstvi] = useState(100)
   const [nacitaAPI, setNacitaAPI] = useState(false)
 
-  const kcalCil = 2100
-  const bilCil = 180
-  const sachCil = 250
-  const tukCil = 72
+  const [kcalCil, setKcalCil] = useState(2000)
+const [bilCil, setBilCil] = useState(150)
+const [sachCil, setSachCil] = useState(200)
+const [tukCil, setTukCil] = useState(65)
 
   useEffect(() => {
     try {
       const ulozena = JSON.parse(localStorage.getItem(dnesniKlic()) || '[]')
       setPridana(ulozena)
     } catch {}
-  }, [])
+const nacistProfil = async () => {
+  if (!uzivatel) return
+  const { data } = await supabase
+    .from('profiles')
+    .select('kcal_cil, bil_cil, sach_cil, tuk_cil')
+    .eq('id', uzivatel.id)
+    .single()
+  if (data) {
+    if (data.kcal_cil) setKcalCil(data.kcal_cil)
+    if (data.bil_cil) setBilCil(data.bil_cil)
+    if (data.sach_cil) setSachCil(data.sach_cil)
+    if (data.tuk_cil) setTukCil(data.tuk_cil)
+  }
+}
+nacistProfil()  
+}, [])
 
   const celkemKcal = pridana.reduce((s, j) => s + Math.round(j.kcal * j.mnozstvi / 100), 0)
   const celkemBil = pridana.reduce((s, j) => s + Math.round(j.bil * j.mnozstvi / 100), 0)
