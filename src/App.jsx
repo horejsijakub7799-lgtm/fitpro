@@ -7,7 +7,7 @@ import Trenink from './pages/Trenink'
 import Vyziva from './pages/Vyziva'
 import Pokrok from './pages/Pokrok'
 import Premium from './pages/Premium'
-
+import Profil from './pages/Profil'
 function App() {
   const [uzivatel, setUzivatel] = useState(null)
   const [nacitam, setNacitam] = useState(true)
@@ -61,14 +61,15 @@ function App() {
     { id: 'vyziva', icon: '🥗', label: 'Výživa' },
     { id: 'pokrok', icon: '📈', label: 'Pokrok' },
     { id: 'premium', icon: '⭐', label: 'Premium' },
-  ]
-
+  { id: 'profil', icon: '👤', label: 'Profil' },
+]
   const pages = {
     home: <Home uzivatel={uzivatel} />,
     trenink: <Trenink />,
     vyziva: <Vyziva />,
     pokrok: <Pokrok />,
     premium: <Premium />,
+    profil: <Profil uzivatel={uzivatel} />,
   }
 
   const jmeno = uzivatel.user_metadata?.full_name || uzivatel.email?.split('@')[0] || 'Uživatel'
